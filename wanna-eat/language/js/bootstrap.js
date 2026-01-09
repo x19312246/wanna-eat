@@ -1129,13 +1129,14 @@
         return;
       }
 
-      var target = $(selector)[0];
+      var target = document.querySelector(selector);
+      var $target = target ? $(target) : null;
 
-      if (!target || !$(target).hasClass(CLASS_NAME_CAROUSEL)) {
+      if (!target || !$target.hasClass(CLASS_NAME_CAROUSEL)) {
         return;
       }
 
-      var config = _objectSpread2(_objectSpread2({}, $(target).data()), $(this).data());
+      var config = _objectSpread2(_objectSpread2({}, $target.data()), $(this).data());
 
       var slideIndex = this.getAttribute('data-slide-to');
 
@@ -1143,10 +1144,10 @@
         config.interval = false;
       }
 
-      Carousel._jQueryInterface.call($(target), config);
+      Carousel._jQueryInterface.call($target, config);
 
       if (slideIndex) {
-        $(target).data(DATA_KEY$2).to(slideIndex);
+        $target.data(DATA_KEY$2).to(slideIndex);
       }
 
       event.preventDefault();
