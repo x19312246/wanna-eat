@@ -1018,6 +1018,11 @@
     customSetter,
     shallow
   ) {
+    // avoid defining reactive properties on special keys that could
+    // lead to prototype pollution
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+      return
+    }    
     var dep = new Dep();
 
     var property = Object.getOwnPropertyDescriptor(obj, key);
@@ -1078,6 +1083,12 @@
    * already exist.
    */
   function set (target, key, val) {
+    // prevent setting potentially dangerous properties that could
+    // result in prototype pollution
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+      warn(('Avoid setting property "' + key + '" as it may lead to prototype pollution.'));
+      return val
+    }
     if (isUndef(target) || isPrimitive(target)
     ) {
       warn(("Cannot set reactive property on undefined, null, or primitive value: " + ((target))));
