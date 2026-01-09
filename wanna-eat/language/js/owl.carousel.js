@@ -1954,6 +1954,50 @@
 	};
 
 	/**
+	 	 * Sanitizes a URL used for lazy loading to prevent execution of
+	 * dangerous schemes.
+	 * @param {String} url
+	 * @returns {String|null}
+	 * @protected
+	 */
+	function sanitizeLazyUrl(url) {
+		if (!url || typeof url !== 'string') {
+			return null;
+		}
+
+		// Trim whitespace and normalize
+		url = $.trim(url);
+		if (!url) {
+			return null;
+		}
+
+		// Allow protocol-relative URLs
+		if (url.indexOf('//') === 0) {
+			return url;
+		}
+
+		// Parse scheme if present
+		var lower = url.toLowerCase();
+		var colonIndex = lower.indexOf(':');
+
+		if (colonIndex > -1) {
+			var scheme = lower.substring(0, colonIndex);
+			// Allow only common safe schemes
+			if (scheme === 'http' || scheme === 'https') {
+				return url;
+			}
+			// Allow data URLs for images only
+			if (scheme === 'data' && /^data:image\//i.test(lower)) {
+				return url;
+			}
+			return null;
+		}
+
+		// Relative URLs without a scheme are allowed
+		return url;
+	}
+
+	/**
 	 * Loads all resources of an item at the specified position.
 	 * @param {Number} position - The absolute position of the item.
 	 * @protected
@@ -1968,7 +2012,12 @@
 
 		$elements.each($.proxy(function(index, element) {
 			var $element = $(element), image,
-                url = (window.devicePixelRatio > 1 && $element.attr('data-src-retina')) || $element.attr('data-src') || $element.attr('data-srcset');
+                				url = (window.devicePixelRatio > 1 && $element.attr('data-src-retina')) || $element.attr('data-src') || $element.attr('data-srcset');
+
+			url = sanitizeLazyUrl(url);
+			if (!url) {
+				return;
+			}
 
 			this._core.trigger('load', { element: $element, url: url }, 'lazy');
 
@@ -1985,7 +2034,7 @@
 				image = new Image();
 				image.onload = $.proxy(function() {
 					$element.css({
-						'background-image': 'url("' + encodeURI(url) + '")',
+						'background-image': 'url("' + url + '")',
 						'opacity': '1'
 					});
 					this._core.trigger('loaded', { element: $element, url: url }, 'lazy');
