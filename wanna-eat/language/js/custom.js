@@ -641,6 +641,48 @@ $(function () {
             
             // Call delete order function
             $('.delete_order').on('click', deleteOrder);
+			
+			
+			$('#export_csv').off('click').on('click', function() {
+				if (!ordersData || ordersData.length === 0) {
+					Swal.fire('提示', '目前沒有訂單資料可供匯出', 'info');
+					return;
+				}
+
+			// 1. 定義 CSV 標頭
+				let csvContent = "\ufeff"; // 添加 BOM 避免 Excel 開啟中文亂碼
+				csvContent += "姓名,餐點名稱,價格,數量,備註,付款狀態\n";
+
+    // 2. 迭代資料
+				ordersData.forEach(function(row) {
+					let status = (row.order_paymentStatus === '1') ? "已付款" : "未付款";
+					let line = [
+						row.order_name,
+						row.order_meal,
+						row.order_price,
+						row.order_number,
+						row.order_remark,
+						status
+					].join(",");
+					csvContent += line + "\n";
+			});
+
+    // 3. 建立下載連結
+			const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement("a");
+    
+    // 設定檔名：訂單編號_日期.csv
+			const orderId = $('#order_id').val();
+			const fileName = `Order_${orderId}_${new Date().toLocaleDateString()}.csv`;
+    
+			link.setAttribute("href", url);
+			link.setAttribute("download", fileName);
+			link.style.visibility = 'hidden';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		});
         }
         
         
