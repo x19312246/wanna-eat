@@ -40,7 +40,7 @@ function add_store()
 //        $GLOBALS['error_message'] = '請輸入店家介紹';
 //        return;
 //    }
-    if(!empty($_POST['store_full_price'])) $store['store_full_price'] = $_POST['store_full_price'];
+    
 
     $store['name'] = $_POST['name'];
     $store['phone'] = $_POST['phone'];
@@ -48,6 +48,8 @@ function add_store()
     $store['store_full_price'] = 0;
     $store['store_tag'] = $_POST['store_tag'];
 
+    if(!empty($_POST['store_full_price'])) $store['store_full_price'] = $_POST['store_full_price'];
+    
     // 校驗圖片
     // empty($_FILES['images'] -> 有欄位但沒填 有變數無值
     // !$_FILES['images'] -> 變數未設置 代表無此欄位 無變數
@@ -92,8 +94,8 @@ function add_store()
             $GLOBALS['error_message'] = '上傳的不是圖片，請上傳圖片類型檔案';
             return;
         }
-        if ($_FILES['store_cover']['size'] > 1 * 1024 * 1024) {
-            $GLOBALS['error_message'] = '上傳的檔案超過 1 MB，請重新上傳';
+        if ($_FILES['store_cover']['size'] > 10 * 1024 * 1024) {
+            $GLOBALS['error_message'] = '上傳的檔案超過 10 MB，請重新上傳';
             return;
         }
 
@@ -120,8 +122,8 @@ function add_store()
             $GLOBALS['error_message'] = '上傳的不是圖片，請上傳圖片類型檔案';
             return;
         }
-        if ($_FILES['images']['size'] > 1 * 1024 * 1024) {
-            $GLOBALS['error_message'] = '上傳的檔案超過 1 MB，請重新上傳';
+        if ($_FILES['images']['size'] > 10 * 1024 * 1024) {
+            $GLOBALS['error_message'] = '上傳的檔案超過 10 MB，請重新上傳';
             return;
         }
 
