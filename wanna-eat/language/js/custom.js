@@ -1179,6 +1179,52 @@ const app = Vue.createApp({
     }
 });
 
+$(function () {
+    // 定義更新數字的函式
+    const updateCountsFromServer = () => {
+        axios.get('count_api.php?action=get')
+            .then(res => {
+                const data = res.data;
+                if (data) {
+                    Object.keys(data).forEach(id => {
+                        // 使用 text() 填入數字
+                        $(`#count-${id}`).text(data[id]);
+                    });
+                }
+            })
+            .catch(err => console.error("初始化計數失敗:", err));
+    };
+
+    // 初始執行一次
+    updateCountsFromServer();
+
+    // 重要：改用 $(document).on 以便在 Vue 渲染後依然能監聽到點擊
+    $(document).on('click', '.btn-like', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const $wrapper = $(this).closest('.click-counter-wrapper');
+        const storeId = $wrapper.data('id');
+        const $numDisplay = $wrapper.find('.counter-num');
+
+        const formData = new FormData();
+        formData.append('id', storeId);
+
+        // 使用您專案內定義的 AjaxData 類別
+        const vote = new AjaxData('count_api.php?action=increment', (res) => {
+            if (res.status === 'success') {
+                $numDisplay.text(res.count);
+                $numDisplay.removeClass('badge-info').addClass('badge-primary');
+            } else {
+                // 使用您專案內定義的 SwalAlert 類別
+                new SwalAlert('提示', res.msg, '', 'info').fire();
+            }
+        }, formData);
+
+        vote.postJson();
+    });
+});
+
 app.mount('#app');
 function clickRowHighlight() {
     const rows = document.querySelectorAll('.table-row');
