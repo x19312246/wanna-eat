@@ -1,3 +1,17 @@
+<style>
+    /* 初始狀態：設定轉場時間 */
+    .btn-like {
+        transition: transform 0.2s ease-in-out;
+        display: inline-block; /* 確保 transform 生效 */
+    }
+
+    /* 滑鼠移入：放大 7 倍 (數值可自行調整) */
+    .btn-like:hover {
+        transform: scale(6.5);
+        z-index: 10; /* 確保放大時不會被遮擋 */
+    }
+</style>
+
 {include file="head.tpl"}
 {include file="header.tpl"}
 <main class="page__res-list" id="app">
@@ -39,13 +53,17 @@
                                 </a>
                                 <a href="{$item.images}"
                                    class="btn-default btn-res-menu btn-menu"
-                                   target="_blank">菜單</a>
+                                   target="_blank">菜單</a>                                
                                 <div class="image_show">
                                     <div class="modal">
                                         <div class="modal-body d-flex align-items-center justify-content-center">
                                             <div class="img"></div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="click-counter-wrapper d-inline-block ml-2" data-id="{$item.id}">
+                                    <img src="./language/img/want.jpg" class="btn-like" style="width: 20px; cursor: pointer;" alt="點擊">
+                                    <span class="badge badge-pill badge-info counter-num" id="count-{$item.id}">0</span>
                                 </div>
                             </div>
                         </div>
